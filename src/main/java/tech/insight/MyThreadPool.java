@@ -36,7 +36,7 @@ public class MyThreadPool {
 
     void execute(Runnable command) {
         if (coreList.size() < corePoolSize) {
-            Thread thread = new CoreThread();
+            Thread thread = new CoreThread(command);
             coreList.add(thread);
             thread.start();
         }
@@ -44,7 +44,7 @@ public class MyThreadPool {
             return;
         }
         if (coreList.size() + supportList.size() < maxSize) {
-            Thread thread = new SupportThread();
+            Thread thread = new SupportThread(command);
             supportList.add(thread);
             thread.start();
         }
@@ -55,8 +55,16 @@ public class MyThreadPool {
 
 
     class CoreThread extends Thread {
+
+        private final Runnable firstTask;
+
+        public CoreThread(Runnable firstTask) {
+            this.firstTask = firstTask;
+        }
+
         @Override
         public void run() {
+            firstTask.run();
             while (true) {
                 try {
                     Runnable command = blockingQueue.take();
@@ -69,8 +77,15 @@ public class MyThreadPool {
     }
 
     class SupportThread extends Thread {
+        private final Runnable firstTask;
+
+        public SupportThread(Runnable firstTask) {
+            this.firstTask = firstTask;
+        }
+
         @Override
         public void run() {
+            firstTask.run();
             while (true) {
                 try {
                     Runnable command = blockingQueue.poll(timeout, timeUnit);
