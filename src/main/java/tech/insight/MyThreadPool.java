@@ -37,16 +37,16 @@ public class MyThreadPool {
     void execute(Runnable command) {
         if (coreList.size() < corePoolSize) {
             Thread thread = new CoreThread(command);
-            coreList.add(thread);
             thread.start();
+            return;
         }
         if (blockingQueue.offer(command)) {
             return;
         }
         if (coreList.size() + supportList.size() < maxSize) {
             Thread thread = new SupportThread(command);
-            supportList.add(thread);
             thread.start();
+            return;
         }
         if (!blockingQueue.offer(command)) {
             rejectHandle.reject(command, this);
