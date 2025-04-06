@@ -37,6 +37,7 @@ public class MyThreadPool {
     void execute(Runnable command) {
         if (coreList.size() < corePoolSize) {
             Thread thread = new CoreThread(command);
+            coreList.add(thread);
             thread.start();
             return;
         }
@@ -45,6 +46,7 @@ public class MyThreadPool {
         }
         if (coreList.size() + supportList.size() < maxSize) {
             Thread thread = new SupportThread(command);
+            supportList.add(thread);
             thread.start();
             return;
         }
@@ -98,6 +100,7 @@ public class MyThreadPool {
                 }
             }
             System.out.println(Thread.currentThread().getName() + "线程结束了！");
+            supportList.remove(Thread.currentThread());
         }
     }
 }
